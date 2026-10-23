@@ -1,0 +1,35 @@
+# Python environments and generated package files
+.venv/
+.venv*/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Private/local paper corpus and generated indexes
+*.pdf
+data/hemtscout.sqlite3*
+data/eval/latest_retrieval_eval.json
+data/finetune/*.jsonl
+!data/finetune/README.md
+
+# Model weights, training outputs, and nested third-party checkout
+models/
+outputs/finetune/
+tools/llama.cpp/
+
+# Logs and editor/OS files
+*.log
+.DS_Store
+Thumbs.db
