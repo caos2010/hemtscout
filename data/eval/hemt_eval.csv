@@ -1,0 +1,4 @@
+id,question,expected_file,reference_answer
+1,"How does gate leakage affect AlGaN/GaN HEMT reliability?",,
+2,"Compare normally-off enhancement-mode HEMT approaches.",,
+3,"What trade-off exists between breakdown voltage and on-resistance?",,
