@@ -22,6 +22,7 @@ function Get-ProjectFiles {
         'Modelfile.hermes-qwen3.5-fast-64k',
         'Modelfile.qwen3-0.6b-64k',
         'install-hermes-skill.ps1',
+        'install-public.ps1',
         'setup-windows.ps1',
         'start-hemtscout.ps1',
         'data/eval/hemt_eval.csv',

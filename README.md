@@ -10,18 +10,18 @@ Model mặc định là `hemt-qwen3-instruct:64k` (Qwen3 4B Q4_K_M), vì model 0
 
 ## Cài tự động trên Windows
 
-Kho GitHub hiện ở chế độ riêng tư. Trên máy mới, đăng nhập GitHub rồi tải ZIP của kho này và giải nén. Mở PowerShell tại thư mục vừa giải nén, chạy:
+Trên Windows 10/11, mở PowerShell và chạy:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process Bypass -Force
-.\setup-windows.ps1
+irm https://raw.githubusercontent.com/caos2010/hemtscout/main/install-public.ps1 | iex
 ```
 
-Bộ cài sẽ đưa chương trình vào `Documents\HEMTScout`, cài Python nếu máy có `winget`, cài Ollama và Hermes Agent từ trang chính thức nếu còn thiếu, tạo môi trường Python, cài HEMTScout, tải Qwen3 4B, tạo model 64K, cài skill tiếng Việt, cấu hình MCP và tạo lối tắt **HEMTScout** trong Start Menu. Thiết lập Hermes của chatbot được đặt trong `%LOCALAPPDATA%\HEMTScout\hermes`, tách khỏi hồ sơ Hermes khác trên máy.
+Bộ khởi động sẽ tự tải ZIP công khai của dự án, giải nén tạm rồi chạy bộ cài. Bộ cài đưa chương trình vào `Documents\HEMTScout`, cài Python nếu máy có `winget`, cài Ollama và Hermes Agent từ trang chính thức nếu còn thiếu, tạo môi trường Python, cài HEMTScout, tải Qwen3 4B, tạo model 64K, cài skill tiếng Việt, cấu hình MCP và tạo lối tắt **HEMTScout** trong Start Menu. Thiết lập Hermes của chatbot được đặt trong `%LOCALAPPDATA%\HEMTScout\hermes`, tách khỏi hồ sơ Hermes khác trên máy.
 
 Sau khi hoàn tất, mở **HEMTScout** từ Start Menu. Chép các PDF của bạn vào `Documents\HEMTScout\data\papers`; thư viện và chỉ mục PDF ở riêng trên từng máy, không nằm trong kho GitHub. Giữ thư mục `Documents\HEMTScout` tại chỗ vì bộ cài cấu hình MCP trỏ vào đó. Có thể chạy lại `setup-windows.ps1` để sửa/cài tiếp nếu bước tải bị gián đoạn; thư mục PDF và chỉ mục hiện có không bị xóa.
 
-Lần đầu cần Internet, vài GB dung lượng tải model và thời gian để cài. Mức độ nhanh/chậm phụ thuộc CPU, GPU, driver và RAM. Với RAM dưới 16 GB, cửa sổ 64K có thể chậm hoặc thiếu bộ nhớ. Cài đặt tự động không thể làm mọi máy chạy nhanh như nhau.
+Lần đầu cần Internet, vài GB dung lượng tải model và thời gian để cài. Python tự cài qua `winget`; nếu máy không có `winget`, cần cài Python 3.12 thủ công. Mức độ nhanh/chậm phụ thuộc CPU, GPU, driver và RAM. Với RAM dưới 16 GB, cửa sổ 64K có thể chậm hoặc thiếu bộ nhớ. Cài đặt tự động không thể làm mọi máy chạy nhanh như nhau.
 
 Tài liệu chính thức dùng trong bộ cài: [Ollama cho Windows](https://ollama.com/download/windows), [Hermes Agent trên Windows](https://hermes-agent.nousresearch.com/docs/getting-started/installation) và [cấu hình MCP của Hermes](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp/).
 
