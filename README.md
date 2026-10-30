@@ -8,6 +8,23 @@ Model mặc định là `hemt-qwen3-instruct:64k` (Qwen3 4B Q4_K_M), vì model 0
 
 > Tải model lần đầu cần Internet. Sau khi tải model và cài dependency, đọc/hỏi paper hoạt động local. Cấu hình máy/VRAM thực tế cần kiểm tra trên laptop vì số VRAM khác nhau theo SKU.
 
+## Cài tự động trên Windows
+
+Kho GitHub hiện ở chế độ riêng tư. Trên máy mới, đăng nhập GitHub rồi tải ZIP của kho này và giải nén. Mở PowerShell tại thư mục vừa giải nén, chạy:
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass -Force
+.\setup-windows.ps1
+```
+
+Bộ cài sẽ đưa chương trình vào `Documents\HEMTScout`, cài Python nếu máy có `winget`, cài Ollama và Hermes Agent từ trang chính thức nếu còn thiếu, tạo môi trường Python, cài HEMTScout, tải Qwen3 4B, tạo model 64K, cài skill tiếng Việt, cấu hình MCP và tạo lối tắt **HEMTScout** trong Start Menu. Thiết lập Hermes của chatbot được đặt trong `%LOCALAPPDATA%\HEMTScout\hermes`, tách khỏi hồ sơ Hermes khác trên máy.
+
+Sau khi hoàn tất, mở **HEMTScout** từ Start Menu. Chép các PDF của bạn vào `Documents\HEMTScout\data\papers`; thư viện và chỉ mục PDF ở riêng trên từng máy, không nằm trong kho GitHub. Giữ thư mục `Documents\HEMTScout` tại chỗ vì bộ cài cấu hình MCP trỏ vào đó. Có thể chạy lại `setup-windows.ps1` để sửa/cài tiếp nếu bước tải bị gián đoạn; thư mục PDF và chỉ mục hiện có không bị xóa.
+
+Lần đầu cần Internet, vài GB dung lượng tải model và thời gian để cài. Mức độ nhanh/chậm phụ thuộc CPU, GPU, driver và RAM. Với RAM dưới 16 GB, cửa sổ 64K có thể chậm hoặc thiếu bộ nhớ. Cài đặt tự động không thể làm mọi máy chạy nhanh như nhau.
+
+Tài liệu chính thức dùng trong bộ cài: [Ollama cho Windows](https://ollama.com/download/windows), [Hermes Agent trên Windows](https://hermes-agent.nousresearch.com/docs/getting-started/installation) và [cấu hình MCP của Hermes](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp/).
+
 ## Cài trên Windows PowerShell
 
 1. Cài Ollama và Hermes Agent theo tài liệu chính thức.
@@ -20,7 +37,7 @@ ollama pull qwen3:4b-instruct
 ollama create hemt-qwen3-instruct:64k -f .\Modelfile.hermes-qwen3-instruct-64k
 ```
 
-3. Trong `%LOCALAPPDATA%\hermes\config.yaml`, đặt model mặc định là `hemt-qwen3-instruct:64k`, endpoint Ollama là `http://127.0.0.1:11434/v1`, context là `65536` và `agent.reasoning_effort: none`. Đăng ký MCP server `hemtscout` bằng `command` trỏ tới `.venv\Scripts\python.exe`, `args: ['-m', 'hemtscout.mcp_server']` và `cwd` là thư mục dự án. Chỉ bật các tool `hemtscout_paper`, `hemtscout_search` và `hemtscout_papers`.
+3. Trong `%LOCALAPPDATA%\hermes\config.yaml`, đặt model mặc định là `hemt-qwen3-instruct:64k`, endpoint Ollama là `http://127.0.0.1:11434/v1`, context là `65536` và `agent.reasoning_effort: none`. Đăng ký MCP server `hemtscout` bằng `command` trỏ tới `.venv\Scripts\python.exe`, `args: ['-m', 'hemtscout.mcp_server']`; cài HEMTScout editable để server tìm thư viện PDF ngay trong thư mục dự án. Chỉ bật các tool `hemtscout_paper`, `hemtscout_search` và `hemtscout_papers`.
 4. Cài skill bằng `& .\install-hermes-skill.ps1`. Script chép `hemt-paper-research-fast` vào `%USERPROFILE%\AppData\Local\hermes\skills\research\` (hoặc thư mục `HERMES_HOME` nếu đã đặt). Quy tắc tiếng Việt và lời chào nằm trong `SOUL.md`. Tạo phiên Hermes mới sau khi đổi SOUL hoặc model; dùng `/reload-mcp` nếu vừa đổi cấu hình MCP trong phiên đang chạy.
 5. Chạy `hemtscout --help` để xem lệnh. Nếu Windows chưa nhận script sau khi cài editable, dùng `python -m hemtscout.cli ...` với Python trong `.venv`.
 
