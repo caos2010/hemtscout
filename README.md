@@ -1,10 +1,10 @@
 # HEMTScout for Hermes Agent
 
-Trợ lý nghiên cứu paper HEMT chạy local trên Windows. Hermes Agent là lớp hội thoại/skill; Ollama chạy model; HEMTScout trích xuất PDF, truy xuất đoạn liên quan, lưu thư viện SQLite và đo chất lượng truy xuất. Paper và câu hỏi không gửi lên dịch vụ đám mây bởi ứng dụng này.
+Trợ lý nghiên cứu paper HEMT chạy local trên Windows. Hermes Agent xử lý hội thoại; Ollama chạy model; HEMTScout trích xuất PDF, truy xuất đoạn liên quan, lưu thư viện SQLite và đo chất lượng truy xuất. Một MCP server stdio cục bộ cung cấp các công cụ `hemtscout_paper`, `hemtscout_search` và `hemtscout_papers` cho Hermes. Đọc PDF không cần gateway, tải tệp từ web hay gửi tài liệu lên dịch vụ đám mây.
 
 ## Phù hợp với laptop
 
-Ryzen 5 4600H có thể chạy CPU inference; GTX 1650 Ti thường có 4 GB VRAM. Bắt đầu với `qwen3:4b` lượng tử hóa (khoảng 2.5 GB tải mô hình, ngoài ra cần VRAM/RAM cho context và runtime). Nếu bị out-of-memory hoặc chạy quá chậm, thử `qwen3:1.7b`. Giảm context trước khi tăng model. Radeon iGPU không phải mục tiêu tăng tốc trong cấu hình Windows này; Ollama có thể dùng NVIDIA nếu driver/CUDA runtime được hỗ trợ.
+Model mặc định là `hemt-qwen3-instruct:64k` (Qwen3 4B Q4_K_M), vì model 0.8B thường không gọi đúng công cụ hoặc bịa chi tiết kỹ thuật. Model 4B tốn nhiều RAM hơn và chậm hơn model 0.8B; đây là đánh trade-off để giữ khả năng đọc PDF qua công cụ. Context được đặt 65,536 token vì Hermes cần khoảng 64K cho agentic tools. Radeon iGPU không phải mục tiêu tăng tốc trong cấu hình Windows này.
 
 > Tải model lần đầu cần Internet. Sau khi tải model và cài dependency, đọc/hỏi paper hoạt động local. Cấu hình máy/VRAM thực tế cần kiểm tra trên laptop vì số VRAM khác nhau theo SKU.
 
@@ -16,11 +16,12 @@ Ryzen 5 4600H có thể chạy CPU inference; GTX 1650 Ti thường có 4 GB VRA
 ```powershell
 py -3 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e .
-ollama pull qwen3:4b
+ollama pull qwen3:4b-instruct
+ollama create hemt-qwen3-instruct:64k -f .\Modelfile.hermes-qwen3-instruct-64k
 ```
 
-3. Hermes cần model đủ mạnh để gọi công cụ. Tạo alias giới hạn context của Qwen3 ở 65536 để Ollama không cấp phát toàn bộ context native 262144 (đã gây lỗi thiếu 36 GiB KV cache): `ollama create hemt-qwen3:64k -f .\outputs\finetune\Modelfile.hermes-qwen3-64k`. Dùng `hemt-qwen3:64k` làm model hội thoại Hermes; giữ `qwen3:4b` cho lệnh HEMTScout và `hemt-pilot` cho thử nghiệm riêng. Hermes dùng endpoint `http://127.0.0.1:11434/v1` và context 65536. Sau khi alias được tạo, cấu hình Hermes local dùng alias này; thoát rồi khởi chạy lại Hermes.
-4. Cài skill bằng `& .\install-hermes-skill.ps1`. Script chép `hemt-paper-research-fast` vào `%LOCALAPPDATA%\hermes\skills\research\` (hoặc thư mục `HERMES_HOME` nếu đã đặt). Sau khi cập nhật skill, chạy `/reset` trong Hermes để nạp hướng dẫn mới.
+3. Trong `%LOCALAPPDATA%\hermes\config.yaml`, đặt model mặc định là `hemt-qwen3-instruct:64k`, endpoint Ollama là `http://127.0.0.1:11434/v1`, context là `65536` và `agent.reasoning_effort: none`. Đăng ký MCP server `hemtscout` bằng `command` trỏ tới `.venv\Scripts\python.exe`, `args: ['-m', 'hemtscout.mcp_server']` và `cwd` là thư mục dự án. Chỉ bật các tool `hemtscout_paper`, `hemtscout_search` và `hemtscout_papers`.
+4. Cài skill bằng `& .\install-hermes-skill.ps1`. Script chép `hemt-paper-research-fast` vào `%USERPROFILE%\AppData\Local\hermes\skills\research\` (hoặc thư mục `HERMES_HOME` nếu đã đặt). Quy tắc tiếng Việt và lời chào nằm trong `SOUL.md`. Tạo phiên Hermes mới sau khi đổi SOUL hoặc model; dùng `/reload-mcp` nếu vừa đổi cấu hình MCP trong phiên đang chạy.
 5. Chạy `hemtscout --help` để xem lệnh. Nếu Windows chưa nhận script sau khi cài editable, dùng `python -m hemtscout.cli ...` với Python trong `.venv`.
 
 ## Quy trình đọc paper
@@ -49,7 +50,7 @@ Nạp PDF cá nhân hoặc paper mà bạn có quyền sử dụng. Parser tríc
 
 ## Lệnh hữu ích
 
-Skill Hermes chạy `hemtscout sync` trước mỗi câu hỏi. Windows-native Hermes dùng Git Bash cho terminal, vì vậy skill dùng đường dẫn `/c/Users/...` và cú pháp Bash; không dùng PowerShell trong terminal tool. Sync chỉ kiểm tra kích thước và thời gian sửa đổi PDF rồi nạp file mới hoặc đã đổi; file không đổi được bỏ qua. Dùng `hemtscout sync --force` để tái lập chỉ mục toàn bộ thư viện.
+MCP server đồng bộ các PDF mới hoặc đã đổi trước khi đọc/tìm kiếm; các tệp không thay đổi được giữ nguyên. Dùng `hemtscout sync --force` để tái lập chỉ mục toàn bộ thư viện.
 
 - `hemtscout ingest <pdf> [--title ...] [--doi ...]`
 - `hemtscout ingest-all`

@@ -29,7 +29,13 @@ models/
 outputs/finetune/
 tools/llama.cpp/
 
+# Local reports and temporary runtime logs
+.tmp/
+reports/
+
 # Logs and editor/OS files
 *.log
 .DS_Store
 Thumbs.db
+.tmp/
+reports/
